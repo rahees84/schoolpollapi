@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -13,10 +14,16 @@ const MONGO_URI = process.env.MONGO_URI || "";
 app.use(express.json());
 
 
+
+
+
+
 //Routes
-app.get("/", (req, res) => {
-    res.send("Bismillah")
-});
+app.use('/api/users', userRoutes);
+
+
+
+
 
 
 // Connect to DB and Start  Server
