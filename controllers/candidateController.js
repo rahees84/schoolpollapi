@@ -1,12 +1,9 @@
+const { default: mongoose } = require("mongoose");
 const Candidate = require("../models/candidateModel");
 
 //CreteCadidate
 exports.createCandidate = async (req, res) => {
     try{
-        if(!req.body || typeof req.body !== 'object'){
-            return res.status(401).json({error: "Request body is missing or invalid"});
-        }
-
         const {code, name, class_division, position, symbol_name, symbol_pic} = req.body;
 
         //Validation
@@ -35,4 +32,86 @@ exports.createCandidate = async (req, res) => {
     catch(err){
         return res.status(500).json({error: "Server error"});
     }
+};
+
+exports.getOneCandidateFromCode = async (req, res) => {
+    try{
+        const {code} = req.params;
+
+        if (!code){
+            return res.status(401).json({error: "No code given"});
+        }
+
+        const candidate = await Candidate.findOne({code});
+
+        if(!candidate){
+            return res.status(404).json({error: "Candidate not found"});
+        }
+        return res.status(200).json(candidate);
+    }
+    catch(err){
+        res.status(500).json({error: "Server error. " + err});
+    }
+};
+
+exports.getOneCandidateFromId = async (req, res) => {
+    try{
+        const {id} = req.params;
+
+        if (!id){
+            return res.status(401).json({error: "No id given"});
+        }
+
+        const candidate = await Candidate.findOne({_id: id});
+
+        if(!candidate){
+            return res.status(404).json({error: "Candidate not found"});
+        }
+        return res.status(200).json(candidate);
+    }
+    catch(err){
+        res.status(500).json({error: "Server error. " + err});
+    }
+};
+
+exports.getCandidates = async (req, res) => {
+    try{
+        const candidates = await Candidate.find();
+
+        return res.status(200).json(candidates);
+    }
+    catch(err){
+        return res.status(500).json({error: "Server error."})
+    }
+};
+
+exports.updateCandidate = async (req, res) => {
+    const { id } = req.params;
+    const {code, name, class_division, position, symbol_name, symbol_pic} = req.body;
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({error: "Invalid Candidate Id"})
+    }
+    if (!id){
+        return res.status(400).json({error: "Id required in url"})
+    }
+
+    const updatedCandidate = await Candidate.findOneAndUpdate(
+        { _id: id },
+        {
+            code,
+            name,
+            class_division,
+            position,
+            symbol_name,
+            symbol_pic
+        },
+        { new: true}
+    );
+
+    if(!updatedCandidate){
+        return res.status(404).json({error: "Candidate not found"});
+    }
+
+    return res.status(200).json(updatedCandidate);
 };
