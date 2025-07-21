@@ -86,32 +86,47 @@ exports.getCandidates = async (req, res) => {
 };
 
 exports.updateCandidate = async (req, res) => {
-    const { id } = req.params;
-    const {code, name, class_division, position, symbol_name, symbol_pic} = req.body;
+    try{
+        const { id } = req.params;
+        const {code, name, class_division, position, symbol_name, symbol_pic} = req.body;
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({error: "Invalid Candidate Id"})
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(400).json({error: "Invalid Candidate Id"})
+        }
+        if (!id){
+            return res.status(400).json({error: "Id required in url"})
+        }
+
+        if(code){
+            const existingCode = await Candidate.findOne({code, _id:{$ne:id}});
+            if(existingCode){
+                return res.status(409).json({error: "Candidate code already in use"});
+            }
+        }
+
+        const updatedCandidate = await Candidate.findOneAndUpdate(
+            { _id: id },
+            {
+                code,
+                name,
+                class_division,
+                position,
+                symbol_name,
+                symbol_pic
+            },
+            { new: true}
+        );
+
+        if(!updatedCandidate){
+            return res.status(404).json({error: "Candidate not found"});
+        }
+
+        return res.status(200).json(updatedCandidate);
     }
-    if (!id){
-        return res.status(400).json({error: "Id required in url"})
+    catch (err){
+        if(err.code === 11000){
+            return res.status(409).json({error: "Duplicate Code not allowed."})
+        }
+        return res.status(500).json({error: "Server error."})
     }
-
-    const updatedCandidate = await Candidate.findOneAndUpdate(
-        { _id: id },
-        {
-            code,
-            name,
-            class_division,
-            position,
-            symbol_name,
-            symbol_pic
-        },
-        { new: true}
-    );
-
-    if(!updatedCandidate){
-        return res.status(404).json({error: "Candidate not found"});
-    }
-
-    return res.status(200).json(updatedCandidate);
 };
