@@ -5,6 +5,8 @@ const userRoutes = require("./routes/userRoutes");
 const swaggerSpec = require('./swagger');
 const swaggerUi = require('swagger-ui-express');
 const candidateRoute =  require('./routes/candidateRoutes');
+const voterRoute = require('./routes/voterRoutes');
+const voteRoute = require('./routes/voteRoutes');
 
 
 dotenv.config();
@@ -26,6 +28,8 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/user', userRoutes);
 app.use('/api/candidate', candidateRoute);
+app.use('/api/voter', voterRoute);
+app.use('/api/vote', voteRoute);
 
 
 
