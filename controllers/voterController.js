@@ -1,4 +1,6 @@
 const Voter = require("../models/voterModel");
+const Vote = require("../models/voteModel");
+const PendingVote =  require("../models/pendingVoteModel");
 const { default: mongoose } = require("mongoose");
 
 //createVoter
@@ -109,3 +111,53 @@ exports.getVoterFromId = async (req, res) => {
         return res.status(500).json({error: "Server error." + err});
     }
 }
+
+exports.getVotersByClassDivision = async (req, res) => {
+    try {
+        let { class_division } = req.params;
+
+        if (!class_division) {
+            return res.status(400).json({ error: "Class Division is required in URL param" });
+        }
+
+        class_division = class_division.toUpperCase();
+
+        const voters = await Voter.aggregate([
+            {
+                $match: { class_division }
+            },
+            {
+                $lookup: {
+                    from: 'votes',
+                    localField: '_id',
+                    foreignField: 'voter_id',
+                    as: 'voteInfo'
+                }
+            },
+            {
+                $addFields: {
+                    hasVoted: { $gt: [{ $size: "$voteInfo" }, 0] }
+                }
+            },
+            {
+                $project: {
+                    voteInfo: 0 // remove vote details, only show hasVoted
+                }
+            }
+        ]);
+
+        return res.status(200).json(voters);
+    } catch (err) {
+        return res.status(500).json({ error: "Server error. " + err.message });
+    }
+};
+
+// Get distinct class divisions
+exports.getAllClassDivisions = async (req, res) => {
+    try {
+        const classDivisions = await Voter.distinct("class_division");
+        return res.status(200).json(classDivisions);
+    } catch (err) {
+        return res.status(500).json({ error: "Server error. " + err.message });
+    }
+};
