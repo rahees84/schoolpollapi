@@ -19,11 +19,13 @@ const app = express();
 const server = http.createServer(app); // Create raw HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "https://schoolpoll-web-app.vercel.app/", //"http://localhost:3000", // Frontend URL   
+    origin: "https://schoolpoll-web-app.vercel.app", //"http://localhost:3000", // Frontend URL   
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
+
+app.set('io', io);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "";
