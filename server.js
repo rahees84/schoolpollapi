@@ -19,7 +19,7 @@ const app = express();
 const server = http.createServer(app); // Create raw HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Frontend URL   
+    origin: "https://schoolpoll-web-app.vercel.app/", //"http://localhost:3000", // Frontend URL   
     methods: ["GET", "POST"],
     credentials: true,
   },
