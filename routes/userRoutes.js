@@ -90,6 +90,39 @@ router.post("/", userController.createUser);
  */
 router.post('/login', userController.userLogin);
 
+/**
+ * @swagger
+ * /api/user/changepassword:
+ *   post:
+ *     summary: Change user password
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: oldpass123
+ *               newPassword:
+ *                 type: string
+ *                 example: newpass456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       401:
+ *         description: Unauthorized or invalid current password
+ *       500:
+ *         description: Server error
+ */
+
 router.post('/changepassword', authMiddleware, userController.changePassword);
 
 module.exports = router;

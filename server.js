@@ -37,7 +37,7 @@ app.use(cors({
 }));
 */
 
-app.use(cors());
+app.use(cors()); //permitted all
 
 app.use(express.json());
 
@@ -50,7 +50,7 @@ app.use("/api/vote", voteRoute);
 app.use("/api/pending-vote", pendingVoteRoute);
 
 // ------------------------
-// 🔌 WebSocket logic
+// WebSocket logic
 let currentVoter = null;
 
 io.on("connection", (socket) => {
