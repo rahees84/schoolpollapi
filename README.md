@@ -43,3 +43,7 @@ School Poll is a RESTful API for managing school elections. It allows administra
 \- \*\*Environment Management:\*\* dotenv
 
 \- \*\*Validation:\*\* express-validator
+
+
+API Documet available at:
+<base_url>/api-docs
